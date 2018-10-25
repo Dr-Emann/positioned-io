@@ -133,7 +133,8 @@ fn test_slice() {
     {
         // Read too much, limited by size.
         let mut buf = [9; 4];
-        let slice = Slice::new(&mut v, 2, Some(3));
+        let slice = Slice::new(&mut v, 2..5);
+        println!("{}", slice.size().unwrap().unwrap());
         let bytes = slice.read_at(2, &mut buf).unwrap();
         assert_eq!(bytes, 1);
         assert_eq!(buf, [4, 9, 9, 9]);
@@ -147,7 +148,7 @@ fn test_slice() {
 
     {
         // Read too much, limited by original vec.
-        let slice = Slice::new(&mut v, 2, Some(5));
+        let slice = Slice::new(&mut v, 2..7);
         let mut buf = [9; 6];
         let bytes = slice.read_at(2, &mut buf).unwrap();
         assert_eq!(bytes, 2);
@@ -156,7 +157,7 @@ fn test_slice() {
 
     {
         // Read too much of unsized slice.
-        let slice = Slice::new(&mut v, 2, None);
+        let slice = Slice::new(&mut v, 2..);
         let mut buf = [9; 6];
         let bytes = slice.read_at(2, &mut buf).unwrap();
         assert_eq!(bytes, 2);
@@ -166,7 +167,7 @@ fn test_slice() {
     // Interleaved read/write to same slice.
     let mut v = vec![0, 1, 2, 3, 4, 5];
     {
-        let mut slice = Slice::new(&mut v, 2, Some(3));
+        let mut slice = Slice::new(&mut v, 2..5);
         let mut buf = [9; 3];
         {
             let bytes = slice.write_at(2, &buf).unwrap();
@@ -189,14 +190,14 @@ fn test_slice() {
     let buf = [9; 6];
     // Limited by size.
     {
-        let mut slice = Slice::new(&mut v, 2, Some(5));
+        let mut slice = Slice::new(&mut v, 2..7);
         let bytes = slice.write_at(1, &buf).unwrap();
         assert_eq!(bytes, 4);
     }
     assert_eq!(v, vec![0, 1, 2, 9, 9, 9, 9]);
     // No size.
     {
-        let mut slice = Slice::new(&mut v, 2, None);
+        let mut slice = Slice::new(&mut v, 2..);
         let bytes = slice.write_at(1, &buf).unwrap();
         assert_eq!(bytes, 6);
     }
@@ -215,8 +216,8 @@ fn test_slice() {
     // Slice of slice.
     let mut v = vec![0, 1, 2, 3, 4, 5];
     {
-        let mut slice1 = Slice::new(&mut v, 1, Some(4));
-        let mut slice2 = Slice::new(&mut slice1, 1, Some(2));
+        let mut slice1 = Slice::new(&mut v, 1..5);
+        let mut slice2 = Slice::new(&mut slice1, 1..3);
         let bytes = slice2.write_at(0, &buf).unwrap();
         assert_eq!(bytes, 2);
     }
