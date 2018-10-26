@@ -111,7 +111,7 @@
 extern crate byteorder;
 
 mod cursor;
-pub use cursor::{Cursor, SizeCursor};
+pub use cursor::Cursor;
 
 mod slice;
 pub use slice::Slice;
@@ -154,7 +154,7 @@ use std::io;
 /// #     try_main().unwrap();
 /// # }
 /// ```
-pub trait ReadAt {
+pub trait ReadAt : Size {
     /// Reads bytes from an offset in this source into a buffer, returning how
     /// many bytes were read.
     ///
@@ -220,7 +220,7 @@ pub trait ReadAt {
 /// #     try_main().unwrap();
 /// # }
 /// ```
-pub trait WriteAt {
+pub trait WriteAt : Size {
     /// Writes bytes from a buffer to an offset, returning the number of bytes
     /// written.
     ///
@@ -304,7 +304,9 @@ pub trait Size {
     ///
     /// This function may return `Ok(None)` if the size is unknown, for example
     /// for pipes.
-    fn size(&self) -> io::Result<Option<u64>>;
+    fn size(&self) -> io::Result<Option<u64>> {
+        Ok(None)
+    }
 }
 
 impl Size for File {

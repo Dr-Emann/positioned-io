@@ -4,7 +4,7 @@ use std::io::{Read, Write};
 
 use byteorder::{ByteOrder, ReadBytesExt, WriteBytesExt};
 
-use super::{ReadAt, WriteAt};
+use super::{ReadAt, WriteAt, Size};
 
 /// Extends `ReadAt` with methods for reading numbers at offsets.
 ///
@@ -335,6 +335,13 @@ impl<I, E: ByteOrder> ByteIo<I, E> {
     #[inline]
     pub fn get_mut(&mut self) -> &mut I {
         &mut self.io
+    }
+}
+
+impl<I: Size, E: ByteOrder> Size for ByteIo<I, E> {
+    #[inline]
+    fn size(&self) -> io::Result<Option<u64>> {
+        self.io.size()
     }
 }
 

@@ -7,7 +7,7 @@ extern crate positioned_io;
 extern crate byteorder;
 use self::byteorder::LittleEndian;
 
-use positioned_io::{ReadAt, WriteAt, Size, Cursor, SizeCursor, ByteIo, Slice};
+use positioned_io::{ReadAt, WriteAt, Size, Cursor, ByteIo, Slice};
 
 #[test]
 fn test_read_at() {
@@ -53,6 +53,12 @@ impl<I: ReadAt, F: Fn() -> Result<usize>> ReadAt for ReadCustom<I, F> {
         } else {
             self.i.read_at(pos, buf)
         }
+    }
+}
+
+impl<I: ReadAt, F: Fn() -> Result<usize>> Size for ReadCustom<I, F> {
+    fn size(&self) -> Result<Option<u64>> {
+        self.i.size()
     }
 }
 
@@ -102,7 +108,7 @@ fn test_cursor() {
 #[test]
 fn test_size_cursor() {
     let file = File::open("Cargo.toml").unwrap();
-    let mut curs = SizeCursor::new_pos(file, 10);
+    let mut curs = Cursor::new_pos(file, 10);
     let mut buf = [0; 4];
     curs.seek(SeekFrom::End(-2)).unwrap();
     assert_eq!(2, curs.read(&mut buf).unwrap());
