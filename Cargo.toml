@@ -16,6 +16,14 @@ byteorder = "1.2"
 quickcheck = "0.7"
 rand = "0.5"
 tempfile = "3.0"
+criterion = "0.2"
+
+[[bench]]
+name = "my_benchmark"
+harness = false
+
+[lib]
+bench = false
 
 [target.'cfg(windows)'.dependencies]
 winapi = { version = "0.3", features = ["basetsd", "minwindef", "handleapi", "fileapi", "sysinfoapi", "memoryapi", "winnt"] }
